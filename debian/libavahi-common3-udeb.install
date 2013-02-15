@@ -1,0 +1,3 @@
+usr/lib/libavahi-common.so.*
+usr/share/avahi/service-types
+usr/lib/avahi/service-types.db

@@ -1,0 +1,2 @@
+shlibs:Depends=libavahi-common3, libc6-udeb (>= 2.13), libgcc1
+misc:Depends=
