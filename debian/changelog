@@ -1,3 +1,27 @@
+avahi (0.6.30-21) unstable; urgency=low
+
+  * SMACK rules updated
+  * Git: slp/pkgs/a/avahi
+  * Tag: avahi_0.6.30-21
+
+ -- Danny Jeongseok Seo <s.seo@samsung.com>  Thu, 14 Feb 2013 21:19:04 +0900
+
+avahi (0.6.30-20) unstable; urgency=low
+
+  * Smack rules updated
+  * Git: slp/pkgs/a/avahi
+  * Tag: avahi_0.6.30-20
+
+ -- GangHeok Kim <gangheok.kim@samsung.com>  Fri, 01 Feb 2013 12:30:24 +0900
+
+avahi (0.6.30-19) unstable; urgency=low
+
+  * Clean up unnecessary files to support FOTA upgrade
+  * Git: slp/pkgs/a/avahi
+  * Tag: avahi_0.6.30-19
+
+ -- GangHeok Kim <gangheok.kim@samsung.com>  Tue, 22 Jan 2013 16:14:09 +0900
+
 avahi (0.6.30-18slp2) unstable; urgency=low
 
   * Added license file

@@ -1,6 +1,6 @@
 <manifest>
 	<request>
-		<domain name="_"/>
+		<domain name="mobileprint"/>
 	</request>
 </manifest>
 

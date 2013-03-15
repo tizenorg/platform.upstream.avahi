@@ -7,7 +7,7 @@
 %define _unpackaged_files_terminate_build 0
 Name:           avahi
 Version:        0.6.30
-Release:        18
+Release:        21
 Summary:        Local network service discovery
 Group:          System Environment/Base
 License:        LGPLv2
@@ -223,6 +223,7 @@ convenient.
 %package libs
 Summary:  Libraries for avahi run-time use
 Group:    System Environment/Libraries
+Requires: poppler-tools
 
 %description libs
 The avahi-libs package contains the libraries needed
@@ -304,6 +305,7 @@ necessary for developing programs using avahi.
 %package -n avahi-data
 Summary:  Libraries for avahi run-time use
 Group:    System Environment/Libraries
+Requires: avahi
 
 %description -n avahi-data
 The avahi-libs package contains the libraries needed
@@ -335,7 +337,7 @@ to run programs that use avahi.
 		--disable-glib \
 		--disable-gobject \
 		--disable-gdbm \
-        --sysconfdir=/opt/etc  \
+        --sysconfdir=/usr/etc  \
 		--localstatedir=/opt/var \
 		--with-systemdsystemunitdir=%{_libdir}/systemd/system
 #		--with-systemdsystemunitdir=/lib/systemd/system CFLAGS=-UGTK_DISABLE_DEPRECATED
@@ -367,18 +369,20 @@ rm -f $RPM_BUILD_ROOT%{_libdir}/*.la
 rm -f $RPM_BUILD_ROOT%{_libdir}/*.a
 
 # remove example
-rm -f $RPM_BUILD_ROOT/opt%{_sysconfdir}/avahi/services/sftp-ssh.service
+rm -f $RPM_BUILD_ROOT/usr%{_sysconfdir}/avahi/services/sftp-ssh.service
 
 # create /var/run/avahi-daemon to ensure correct selinux policy for it:
 mkdir -p $RPM_BUILD_ROOT/opt%{_localstatedir}/run/avahi-daemon
+
+
 #mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/lib/avahi-autoipd
 
 # remove the documentation directory - let % doc handle it:
 #rm -rf $RPM_BUILD_ROOT%{_datadir}/%{name}-%{version}
 
 # Make /etc/avahi/etc/localtime owned by avahi:
-mkdir -p $RPM_BUILD_ROOT/opt/etc/avahi/etc
-touch $RPM_BUILD_ROOT/opt/etc/avahi/etc/localtime
+mkdir -p $RPM_BUILD_ROOT/usr/etc/avahi/etc
+touch $RPM_BUILD_ROOT/usr/etc/avahi/etc/localtime
 
 # fix bug 197414 - add missing symlinks for avahi-compat-howl and avahi-compat-dns-sd
 #%if %{WITH_COMPAT_HOWL}
@@ -413,6 +417,12 @@ rm -rf $RPM_BUILD_ROOT
 
 %post
 mkdir -p /opt/var/run/avahi-daemon
+if [ -f /usr/lib/rpm-plugins/msm.so ]
+then
+	chsmack -a _ /opt/var/run
+	chsmack -a mobileprint /opt/var/run/avahi-daemon
+fi
+
 #Evne eglibc is included in Requires(post),
 #Not sure whether it's ok or not during making OBS image.
 #That's why if statement is commented out to gurantee chown operation
@@ -420,7 +430,8 @@ mkdir -p /opt/var/run/avahi-daemon
     chown -R 5000:5000 /opt/var/run/avahi-daemon || true
 #fi
 
-/sbin/ldconfig
+
+#/sbin/ldconfig
 #dbus-send --system --type=method_call --dest=org.freedesktop.DBus / org.freedesktop.DBus.ReloadConfig >/dev/null 2>&1 || :
 #/sbin/chkconfig --add avahi-daemon >/dev/null 2>&1 || :
 #if [ "$1" -eq 1 ]; then
@@ -430,7 +441,7 @@ mkdir -p /opt/var/run/avahi-daemon
 #        fi
 #fi
 
-%triggerun -- avahi < 0.6.28-1
+#%triggerun -- avahi < 0.6.28-1
 #if /sbin/chkconfig --level 5 avahi-daemon ; then
 #        /bin/systemctl --no-reload enable avahi-daemon.service >/dev/null 2>&1 || :
 #fi
@@ -444,7 +455,7 @@ mkdir -p /opt/var/run/avahi-daemon
 
 %postun
 #/bin/systemctl daemon-reload >/dev/null 2>&1 || :
-/sbin/ldconfig
+#/sbin/ldconfig
 
 #%pre autoipd
 #getent group avahi-autoipd >/dev/null 2>&1 || groupadd \
@@ -511,23 +522,18 @@ mkdir -p /opt/var/run/avahi-daemon
 #%post gobject -p /sbin/ldconfig
 #%postun gobject -p /sbin/ldconfig
 
-%files -f %{name}.lang
+%files
 %manifest avahi.manifest
 %defattr(0644,root,root,0755)
 /usr/share/license/%{name}
 %ghost %attr(0755,avahi,avahi) %dir /opt%{_localstatedir}/run/avahi-daemon
 %attr(0755,root,root) %{_sbindir}/avahi-daemon
-%dir %{_datadir}/avahi
-%{_datadir}/avahi/*.dtd
-%{_datadir}/avahi/service-types
-%{_libdir}/avahi
-%{_datadir}/dbus-1/interfaces/*.xml
+#%{_datadir}/dbus-1/interfaces/*.xml
 #%{_mandir}/man5/*
 #%{_mandir}/man8/avahi-daemon.*
-%{_libdir}/systemd/system/avahi-daemon.service
-%{_libdir}/systemd/system/avahi-daemon.socket
-%{_datadir}/dbus-1/system-services/org.freedesktop.Avahi.service
-%attr(0755,root,root) %{_libdir}/libavahi-core.so.*
+#%{_libdir}/systemd/system/avahi-daemon.service
+#%{_libdir}/systemd/system/avahi-daemon.socket
+#%{_datadir}/dbus-1/system-services/org.freedesktop.Avahi.service
 
 #%files autoipd
 #%defattr(0644,root,root,0755)
@@ -594,23 +600,28 @@ mkdir -p /opt/var/run/avahi-daemon
 %manifest avahi-libs.manifest
 %defattr(0644, root, root, 0755)
 /usr/share/license/avahi-libs
+%{_libdir}/avahi
 %attr(0755,root,root) %{_libdir}/libavahi-common.so.*
 %attr(0755,root,root) %{_libdir}/libavahi-client.so.*
+%attr(0755,root,root) %{_libdir}/libavahi-core.so.*
 
 %files -n avahi-data
 %manifest avahi-data.manifest
 %defattr(0644,root,root,0755)
 /usr/share/license/avahi-data
 #%doc docs/* avahi-daemon/example.service avahi-daemon/sftp-ssh.service
-%attr(0755,root,root) /opt%{_sysconfdir}/rc.d/init.d/avahi-daemon
-%dir /opt%{_sysconfdir}/avahi
-%dir /opt%{_sysconfdir}/avahi/etc
-%ghost /opt%{_sysconfdir}/avahi/etc/localtime
-%config(noreplace) /opt%{_sysconfdir}/avahi/hosts
-%dir /opt%{_sysconfdir}/avahi/services
-%config(noreplace) /opt%{_sysconfdir}/avahi/avahi-daemon.conf
-%config(noreplace) /opt%{_sysconfdir}/avahi/services/ssh.service
-%config(noreplace) /opt%{_sysconfdir}/dbus-1/system.d/avahi-dbus.conf
+#%attr(0755,root,root) /usr%{_sysconfdir}/rc.d/init.d/avahi-daemon
+%dir %{_datadir}/avahi
+%{_datadir}/avahi/*.dtd
+%{_datadir}/avahi/service-types
+%dir /usr/%{_sysconfdir}/avahi
+%dir /usr%{_sysconfdir}/avahi/etc
+%ghost /usr%{_sysconfdir}/avahi/etc/localtime
+#%config(noreplace) /usr%{_sysconfdir}/avahi/hosts
+#%dir /usr%{_sysconfdir}/avahi/services
+%config(noreplace) /usr%{_sysconfdir}/avahi/avahi-daemon.conf
+#%config(noreplace) /usr%{_sysconfdir}/avahi/services/ssh.service
+#%config(noreplace) /usr%{_sysconfdir}/dbus-1/system.d/avahi-dbus.conf
 
 #%files glib
 #%defattr(0755, root, root, 0755)
