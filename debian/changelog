@@ -1,3 +1,11 @@
+avahi (0.6.30-22) unstable; urgency=low
+
+  * Removed unnecessary files and configuration
+  * Git: external/avahi
+  * Tag: avahi_0.6.30-22
+
+ -- GangHeok Kim <gangheok.kim@samsung.com>  Tue, 26 Mar 2013 11:26:53 +0900
+
 avahi (0.6.30-21) unstable; urgency=low
 
   * SMACK rules updated

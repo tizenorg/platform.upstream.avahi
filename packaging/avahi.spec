@@ -7,7 +7,7 @@
 %define _unpackaged_files_terminate_build 0
 Name:           avahi
 Version:        0.6.30
-Release:        21
+Release:        22
 Summary:        Local network service discovery
 Group:          System Environment/Base
 License:        LGPLv2
@@ -35,7 +35,7 @@ BuildRequires:  libdaemon-devel
 BuildRequires:  libcap-devel
 BuildRequires:  expat-devel
 #BuildRequires:  python
-BuildRequires:  gdbm-devel
+#BuildRequires:  gdbm-devel
 #BuildRequires:  pygtk2
 BuildRequires:  intltool
 BuildRequires:  perl-XML-Parser
@@ -339,7 +339,8 @@ to run programs that use avahi.
 		--disable-gdbm \
         --sysconfdir=/usr/etc  \
 		--localstatedir=/opt/var \
-		--with-systemdsystemunitdir=%{_libdir}/systemd/system
+		--without-systemdsystemunitdir
+#		--with-systemdsystemunitdir=%{_libdir}/systemd/system
 #		--with-systemdsystemunitdir=/lib/systemd/system CFLAGS=-UGTK_DISABLE_DEPRECATED
 
 #%if %{WITH_COMPAT_DNSSD}
@@ -601,6 +602,7 @@ fi
 %defattr(0644, root, root, 0755)
 /usr/share/license/avahi-libs
 %{_libdir}/avahi
+%exclude %{_libdir}/avahi/service-types.db
 %attr(0755,root,root) %{_libdir}/libavahi-common.so.*
 %attr(0755,root,root) %{_libdir}/libavahi-client.so.*
 %attr(0755,root,root) %{_libdir}/libavahi-core.so.*
@@ -611,15 +613,15 @@ fi
 /usr/share/license/avahi-data
 #%doc docs/* avahi-daemon/example.service avahi-daemon/sftp-ssh.service
 #%attr(0755,root,root) /usr%{_sysconfdir}/rc.d/init.d/avahi-daemon
-%dir %{_datadir}/avahi
-%{_datadir}/avahi/*.dtd
-%{_datadir}/avahi/service-types
+%exclude %dir %{_datadir}/avahi
+%exclude %{_datadir}/avahi/*.dtd
+%exclude %{_datadir}/avahi/service-types
 %dir /usr/%{_sysconfdir}/avahi
 %dir /usr%{_sysconfdir}/avahi/etc
 %ghost /usr%{_sysconfdir}/avahi/etc/localtime
 #%config(noreplace) /usr%{_sysconfdir}/avahi/hosts
 #%dir /usr%{_sysconfdir}/avahi/services
-%config(noreplace) /usr%{_sysconfdir}/avahi/avahi-daemon.conf
+/usr%{_sysconfdir}/avahi/avahi-daemon.conf
 #%config(noreplace) /usr%{_sysconfdir}/avahi/services/ssh.service
 #%config(noreplace) /usr%{_sysconfdir}/dbus-1/system.d/avahi-dbus.conf
 
