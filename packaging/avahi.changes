@@ -1,0 +1,2 @@
+* Wed Jun 19 01:10:01 UTC 2013 - tracy.graydon@intel.com
+- Fix dependendy on eglibc. 
