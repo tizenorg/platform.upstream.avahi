@@ -1,0 +1,8 @@
+Change-Id: I3bed0ddc50b6388ffc727c6e4748211130f250af
+Code-Review+2: Anas Nashif <anas.nashif@intel.com>
+Verified+1: Anas Nashif <anas.nashif@intel.com>
+Submitted-by: Anas Nashif <anas.nashif@intel.com>
+Submitted-at: Wed, 19 Jun 2013 05:48:07 -0700
+Reviewed-on: https://review.tizen.org/gerrit/4083
+Project: platform/upstream/avahi
+Branch: refs/heads/tizen
