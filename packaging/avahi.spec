@@ -46,6 +46,7 @@ BuildRequires:  perl-XML-Parser
 Obsoletes:      howl
 #Source0:        http://avahi.org/download/%{name}-%{version}.tar.gz
 Source0:        %{name}-%{version}.tar.gz
+Source1001: 	avahi.manifest
 #Patch1:         01_avahi-daemon.conf.patch
 
 %description
@@ -87,6 +88,7 @@ to run programs that use avahi.
 
 %prep
 %setup -q
+cp %{SOURCE1001} .
 
 #%patch1 -p1
 
@@ -278,7 +280,7 @@ mkdir -p /opt/var/run/avahi-daemon
 #%postun gobject -p /sbin/ldconfig
 
 %files
-%manifest avahi.manifest
+%manifest %{name}.manifest
 %defattr(0644,root,root,0755)
 /usr/share/license/%{name}
 %ghost %attr(0755,avahi,avahi) %dir /opt%{_localstatedir}/run/avahi-daemon
@@ -331,6 +333,7 @@ mkdir -p /opt/var/run/avahi-daemon
 #%{_datadir}/avahi/interfaces/
 
 %files devel
+%manifest %{name}.manifest
 %defattr(0644, root, root, 0755)
 %attr(755,root,root) %{_libdir}/libavahi-common.so
 %attr(755,root,root) %{_libdir}/libavahi-core.so
@@ -352,7 +355,7 @@ mkdir -p /opt/var/run/avahi-daemon
 %attr(755,root,root) /usr/sbin/avahi-autoipd
 
 %files libs
-%manifest avahi-libs.manifest
+%manifest %{name}.manifest
 %defattr(0644, root, root, 0755)
 /usr/share/license/avahi-libs
 %{_libdir}/avahi
@@ -362,7 +365,7 @@ mkdir -p /opt/var/run/avahi-daemon
 %attr(0755,root,root) %{_libdir}/libavahi-core.so.*
 
 %files -n avahi-data
-%manifest avahi-data.manifest
+%manifest %{name}.manifest
 %defattr(0644,root,root,0755)
 /usr/share/license/avahi-data
 #%doc docs/* avahi-daemon/example.service avahi-daemon/sftp-ssh.service
