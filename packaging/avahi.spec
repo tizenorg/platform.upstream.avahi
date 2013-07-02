@@ -180,11 +180,11 @@ rm -rf $RPM_BUILD_ROOT
 
 %post
 mkdir -p /opt/var/run/avahi-daemon
-if [ -f /usr/lib/rpm-plugins/msm.so ]
-then
+#if [ -f /usr/lib/rpm-plugins/msm.so ]
+#then
 #	chsmack -a _ /opt/var/run
 #	chsmack -a mobileprint /opt/var/run/avahi-daemon
-fi
+#fi
 
 #Evne eglibc is included in Requires(post),
 #Not sure whether it's ok or not during making OBS image.
