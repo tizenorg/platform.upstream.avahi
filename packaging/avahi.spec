@@ -182,8 +182,8 @@ rm -rf $RPM_BUILD_ROOT
 mkdir -p /opt/var/run/avahi-daemon
 if [ -f /usr/lib/rpm-plugins/msm.so ]
 then
-	chsmack -a _ /opt/var/run
-	chsmack -a mobileprint /opt/var/run/avahi-daemon
+#	chsmack -a _ /opt/var/run
+#	chsmack -a mobileprint /opt/var/run/avahi-daemon
 fi
 
 #Evne eglibc is included in Requires(post),
