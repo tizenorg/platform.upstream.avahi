@@ -1,0 +1,10 @@
+Change-Id: I2f7b1c018109164d7008de0d8533c0df5ed3533e
+Code-Review+2: Ryan Ware <ware@linux.intel.com>
+Verified+1: Ryan Ware <ware@linux.intel.com>
+Code-Review+1: Elena Reshetova <elena.reshetova@intel.com>
+Verified+1: Elena Reshetova <elena.reshetova@intel.com>
+Submitted-by: Ryan Ware <ware@linux.intel.com>
+Submitted-at: Mon, 08 Jul 2013 09:36:28 -0700
+Reviewed-on: https://review.tizen.org/gerrit/5449
+Project: platform/upstream/avahi
+Branch: refs/heads/tizen
