@@ -1,0 +1,9 @@
+[Unit]
+Description=Set SMACK labels for volatile avahi directories
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/chsmack -a org.tizen.mobileprint /opt/var/run/avahi-daemon
+
+[Install]
+WantedBy=multi-user.target
