@@ -7,7 +7,7 @@
 %define _unpackaged_files_terminate_build 0
 Name:           avahi
 Version:        0.6.30
-Release:        22
+Release:        23
 Summary:        Local network service discovery
 Group:          System Environment/Base
 License:        LGPL-2.0
@@ -46,6 +46,8 @@ BuildRequires:  perl-XML-Parser
 Obsoletes:      howl
 #Source0:        http://avahi.org/download/%{name}-%{version}.tar.gz
 Source0:        %{name}-%{version}.tar.gz
+Source1:	avahi-smack.service
+Source2:	%{name}-tmpfiles.conf
 Source1001:	%{name}.manifest
 Source1002:	%{name}-libs.manifest
 Source1003:	%{name}-devel.manifest
@@ -127,6 +129,13 @@ make %{?_smp_mflags}
 rm -rf $RPM_BUILD_ROOT
 make install DESTDIR=$RPM_BUILD_ROOT
 
+mkdir -p %{buildroot}/usr/lib/systemd/system/multi-user.target.wants
+cp %{SOURCE1} %{buildroot}/usr/lib/systemd/system
+ln -s ../avahi-smack.service %{buildroot}/usr/lib/systemd/system/multi-user.target.wants/avahi-smack.service
+
+mkdir -p %{buildroot}/usr/lib/tmpfiles.d/
+cp %{SOURCE2} %{buildroot}/usr/lib/tmpfiles.d/avahi.conf
+
 mkdir -p %{buildroot}/usr/share/license
 cp %{_builddir}/%{buildsubdir}/LICENSE %{buildroot}/usr/share/license/avahi
 cp %{_builddir}/%{buildsubdir}/LICENSE %{buildroot}/usr/share/license/avahi-libs
@@ -182,12 +191,11 @@ rm -rf $RPM_BUILD_ROOT
 #:;
 
 %post
-mkdir -p /opt/var/run/avahi-daemon
+
 #Evne eglibc is included in Requires(post),
 #Not sure whether it's ok or not during making OBS image.
 #That's why if statement is commented out to gurantee chown operation
 #if [ ! -z "`getent group app`" ]; then
-    chown -R 5000:5000 /opt/var/run/avahi-daemon || true
 #fi
 
 
@@ -288,6 +296,9 @@ mkdir -p /opt/var/run/avahi-daemon
 /usr/share/license/%{name}
 %ghost %attr(0755,avahi,avahi) %dir /opt%{_localstatedir}/run/avahi-daemon
 %attr(0755,root,root) %{_sbindir}/avahi-daemon
+/usr/lib/systemd/system/avahi-smack.service
+/usr/lib/systemd/system/multi-user.target.wants/avahi-smack.service
+/usr/lib/tmpfiles.d/avahi.conf
 #%{_datadir}/dbus-1/interfaces/*.xml
 #%{_mandir}/man5/*
 #%{_mandir}/man8/avahi-daemon.*
