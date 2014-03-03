@@ -3,7 +3,7 @@ Name:           avahi
 Version:        0.6.30
 Release:        0
 Summary:        Local network service discovery
-Group:          System Environment/Base
+Group:          System/Network
 License:        LGPL-2.0
 Requires:       dbus
 Requires:       expat
@@ -17,6 +17,7 @@ BuildRequires:  libcap-devel
 BuildRequires:  expat-devel
 BuildRequires:  intltool
 BuildRequires:  perl-XML-Parser
+BuildRequires:  libtzplatform-config-devel
 Obsoletes:      howl
 Source0:        %{name}-%{version}.tar.gz
 Source1001:     %{name}.manifest
@@ -35,7 +36,7 @@ convenient.
 
 %package libs
 Summary:  Libraries for avahi run-time use
-Group:    System Environment/Libraries
+Group:    System/Libraries
 Requires: poppler-tools
 
 %description libs
@@ -54,7 +55,7 @@ necessary for developing programs using avahi.
 
 %package -n avahi-data
 Summary:  Libraries for avahi run-time use
-Group:    System Environment/Libraries
+Group:    System/Libraries
 Requires: avahi
 
 %description -n avahi-data
@@ -98,9 +99,9 @@ rm -rf $RPM_BUILD_ROOT
 make install DESTDIR=$RPM_BUILD_ROOT
 
 mkdir -p %{buildroot}/usr/share/license
-cp %{_builddir}/%{buildsubdir}/LICENSE %{buildroot}/usr/share/license/avahi
-cp %{_builddir}/%{buildsubdir}/LICENSE %{buildroot}/usr/share/license/avahi-libs
-cp %{_builddir}/%{buildsubdir}/LICENSE %{buildroot}/usr/share/license/avahi-data
+cp %{_builddir}/%{buildsubdir}/LICENSE %{buildroot}%{_datarootdir}/license/avahi
+cp %{_builddir}/%{buildsubdir}/LICENSE %{buildroot}%{_datarootdir}/license/avahi-libs
+cp %{_builddir}/%{buildsubdir}/LICENSE %{buildroot}%{_datarootdir}/license/avahi-data
 
 rm -f $RPM_BUILD_ROOT%{_libdir}/*.la
 rm -f $RPM_BUILD_ROOT%{_libdir}/*.a
@@ -132,7 +133,7 @@ mkdir -p /opt/var/run/avahi-daemon
 #Not sure whether it's ok or not during making OBS image.
 #That's why if statement is commented out to gurantee chown operation
 #if [ ! -z "`getent group app`" ]; then
-    chown -R 5000:5000 /opt/var/run/avahi-daemon || true
+    chown -R :%{TZ_SYS_USER_GROUP} /opt/var/run/avahi-daemon || true
 #fi
 
 
@@ -145,7 +146,7 @@ mkdir -p /opt/var/run/avahi-daemon
 %files
 %manifest %{name}.manifest
 %defattr(0644,root,root,0755)
-/usr/share/license/%{name}
+%{_datarootdir}/license/%{name}
 %ghost %attr(0755,avahi,avahi) %dir /opt%{_localstatedir}/run/avahi-daemon
 %attr(0755,root,root) %{_sbindir}/avahi-daemon
 
@@ -160,21 +161,21 @@ mkdir -p /opt/var/run/avahi-daemon
 %{_includedir}/avahi-core
 %{_libdir}/pkgconfig/avahi-core.pc
 %{_libdir}/pkgconfig/avahi-client.pc
-%attr(755,root,root) /usr/bin/avahi-browse
-%attr(755,root,root) /usr/bin/avahi-browse-domains
-%attr(755,root,root) /usr/bin/avahi-publish
-%attr(755,root,root) /usr/bin/avahi-publish-address
-%attr(755,root,root) /usr/bin/avahi-publish-service
-%attr(755,root,root) /usr/bin/avahi-resolve
-%attr(755,root,root) /usr/bin/avahi-resolve-address
-%attr(755,root,root) /usr/bin/avahi-resolve-host-name
-%attr(755,root,root) /usr/bin/avahi-set-host-name
-%attr(755,root,root) /usr/sbin/avahi-autoipd
+%attr(755,root,root) %{_bindir}/avahi-browse
+%attr(755,root,root) %{_bindir}/avahi-browse-domains
+%attr(755,root,root) %{_bindir}/avahi-publish
+%attr(755,root,root) %{_bindir}/avahi-publish-address
+%attr(755,root,root) %{_bindir}/avahi-publish-service
+%attr(755,root,root) %{_bindir}/avahi-resolve
+%attr(755,root,root) %{_bindir}/avahi-resolve-address
+%attr(755,root,root) %{_bindir}/avahi-resolve-host-name
+%attr(755,root,root) %{_bindir}/avahi-set-host-name
+%attr(755,root,root) %{_sbindir}/avahi-autoipd
 
 %files libs
 %manifest %{name}-libs.manifest
 %defattr(0644, root, root, 0755)
-/usr/share/license/avahi-libs
+%{_datarootdir}/license/avahi-libs
 %{_libdir}/avahi
 %exclude %{_libdir}/avahi/service-types.db
 %attr(0755,root,root) %{_libdir}/libavahi-common.so.*
@@ -184,7 +185,7 @@ mkdir -p /opt/var/run/avahi-daemon
 %files -n avahi-data
 %manifest avahi-data.manifest
 %defattr(0644,root,root,0755)
-/usr/share/license/avahi-data
+%{_datarootdir}/license/avahi-data
 %exclude %dir %{_datadir}/avahi
 %exclude %{_datadir}/avahi/*.dtd
 %exclude %{_datadir}/avahi/service-types
