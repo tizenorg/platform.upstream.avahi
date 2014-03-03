@@ -1,3 +1,0 @@
-etc/avahi/avahi-dnsconfd.action
-usr/sbin/avahi-dnsconfd
-lib/systemd/system/avahi-dnsconfd.service
