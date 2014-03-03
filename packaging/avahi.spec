@@ -3,7 +3,7 @@ Name:           avahi
 Version:        0.6.30
 Release:        0
 Summary:        Local network service discovery
-Group:          System Environment/Base
+Group:          System/Network
 License:        LGPL-2.0
 Requires:       dbus
 Requires:       expat
@@ -22,7 +22,7 @@ Source0:        %{name}-%{version}.tar.gz
 Source1001:     %{name}.manifest
 Source1002:     %{name}-libs.manifest
 Source1003:     %{name}-devel.manifest
-Source1004:     avahi-data.manifest
+Source1004:     %{name}-data.manifest
 
 %description
 Avahi is a system which facilitates service discovery on
@@ -35,7 +35,7 @@ convenient.
 
 %package libs
 Summary:  Libraries for avahi run-time use
-Group:    System Environment/Libraries
+Group:    System/Libraries
 Requires: poppler-tools
 
 %description libs
@@ -52,12 +52,12 @@ Requires: pkgconfig
 The avahi-devel package contains the header files and libraries
 necessary for developing programs using avahi.
 
-%package -n avahi-data
+%package -n %{name}-data
 Summary:  Libraries for avahi run-time use
-Group:    System Environment/Libraries
-Requires: avahi
+Group:    System/Libraries
+Requires: %{name}
 
-%description -n avahi-data
+%description -n %{name}-data
 The avahi-libs package contains the libraries needed
 to run programs that use avahi.
 
@@ -66,7 +66,7 @@ to run programs that use avahi.
 cp %{SOURCE1001} %{SOURCE1002} %{SOURCE1003} %{SOURCE1004} .
 
 %build
-%configure --with-distro=fedora --with-avahi-user=app --with-avahi-group=app --with-avahi-priv-access-group=app \
+%configure --with-distro=fedora --with-avahi-user=avahi --with-avahi-group=avahi --with-avahi-priv-access-group=avahi \
 		--disable-compat-libdns_sd \
 		--disable-mono \
 		--disable-monodoc \
@@ -86,7 +86,7 @@ cp %{SOURCE1001} %{SOURCE1002} %{SOURCE1003} %{SOURCE1004} .
 		--disable-glib \
 		--disable-gobject \
 		--disable-gdbm \
-        --sysconfdir=/usr/etc  \
+        --sysconfdir=%{_sysconfdir}  \
 		--localstatedir=/opt/var \
 		--without-systemdsystemunitdir
 
@@ -97,27 +97,22 @@ make %{?_smp_mflags}
 rm -rf $RPM_BUILD_ROOT
 make install DESTDIR=$RPM_BUILD_ROOT
 
-mkdir -p %{buildroot}/usr/share/license
-cp %{_builddir}/%{buildsubdir}/LICENSE %{buildroot}/usr/share/license/avahi
-cp %{_builddir}/%{buildsubdir}/LICENSE %{buildroot}/usr/share/license/avahi-libs
-cp %{_builddir}/%{buildsubdir}/LICENSE %{buildroot}/usr/share/license/avahi-data
-
 rm -f $RPM_BUILD_ROOT%{_libdir}/*.la
 rm -f $RPM_BUILD_ROOT%{_libdir}/*.a
 
 # remove example
-rm -f $RPM_BUILD_ROOT/usr%{_sysconfdir}/avahi/services/sftp-ssh.service
+rm -f $RPM_BUILD_ROOT%{_sysconfdir}/%{name}/services/sftp-ssh.service
 
 # create /var/run/avahi-daemon to ensure correct selinux policy for it:
-mkdir -p $RPM_BUILD_ROOT/opt%{_localstatedir}/run/avahi-daemon
+mkdir -p $RPM_BUILD_ROOT/opt%{_localstatedir}/run/%{name}-daemon
 
 
-#mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/lib/avahi-autoipd
+#mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/lib/%{name}-autoipd
 
 
 # Make /etc/avahi/etc/localtime owned by avahi:
-mkdir -p $RPM_BUILD_ROOT/usr/etc/avahi/etc
-touch $RPM_BUILD_ROOT/usr/etc/avahi/etc/localtime
+mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/%{name}/etc
+touch $RPM_BUILD_ROOT%{_sysconfdir}/%{name}/etc/localtime
 
 
 %find_lang %{name}
@@ -127,12 +122,12 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %post
-mkdir -p /opt/var/run/avahi-daemon
+mkdir -p /opt/var/run/%{name}-daemon
 #Evne eglibc is included in Requires(post),
 #Not sure whether it's ok or not during making OBS image.
 #That's why if statement is commented out to gurantee chown operation
-#if [ ! -z "`getent group app`" ]; then
-    chown -R 5000:5000 /opt/var/run/avahi-daemon || true
+#if [ ! -z "`getent group %{name}`" ]; then
+    chown -R %{name}:%{name} /opt/var/run/%{name}-daemon || true
 #fi
 
 
@@ -145,50 +140,50 @@ mkdir -p /opt/var/run/avahi-daemon
 %files
 %manifest %{name}.manifest
 %defattr(0644,root,root,0755)
-/usr/share/license/%{name}
-%ghost %attr(0755,avahi,avahi) %dir /opt%{_localstatedir}/run/avahi-daemon
-%attr(0755,root,root) %{_sbindir}/avahi-daemon
+%ghost %attr(0755,%{name},%{name}) %dir /opt%{_localstatedir}/run/%{name}-daemon
+%attr(0755,root,root) %{_sbindir}/%{name}-daemon
+%license LICENSE
 
 %files devel
 %manifest %{name}-devel.manifest
 %defattr(0644, root, root, 0755)
-%attr(755,root,root) %{_libdir}/libavahi-common.so
-%attr(755,root,root) %{_libdir}/libavahi-core.so
-%attr(755,root,root) %{_libdir}/libavahi-client.so
-%{_includedir}/avahi-client
-%{_includedir}/avahi-common
-%{_includedir}/avahi-core
-%{_libdir}/pkgconfig/avahi-core.pc
-%{_libdir}/pkgconfig/avahi-client.pc
-%attr(755,root,root) /usr/bin/avahi-browse
-%attr(755,root,root) /usr/bin/avahi-browse-domains
-%attr(755,root,root) /usr/bin/avahi-publish
-%attr(755,root,root) /usr/bin/avahi-publish-address
-%attr(755,root,root) /usr/bin/avahi-publish-service
-%attr(755,root,root) /usr/bin/avahi-resolve
-%attr(755,root,root) /usr/bin/avahi-resolve-address
-%attr(755,root,root) /usr/bin/avahi-resolve-host-name
-%attr(755,root,root) /usr/bin/avahi-set-host-name
-%attr(755,root,root) /usr/sbin/avahi-autoipd
+%attr(755,root,root) %{_libdir}/lib%{name}-common.so
+%attr(755,root,root) %{_libdir}/lib%{name}-core.so
+%attr(755,root,root) %{_libdir}/lib%{name}-client.so
+%{_includedir}/%{name}-client
+%{_includedir}/%{name}-common
+%{_includedir}/%{name}-core
+%{_libdir}/pkgconfig/%{name}-core.pc
+%{_libdir}/pkgconfig/%{name}-client.pc
+%attr(755,root,root) %{_bindir}/%{name}-browse
+%attr(755,root,root) %{_bindir}/%{name}-browse-domains
+%attr(755,root,root) %{_bindir}/%{name}-publish
+%attr(755,root,root) %{_bindir}/%{name}-publish-address
+%attr(755,root,root) %{_bindir}/%{name}-publish-service
+%attr(755,root,root) %{_bindir}/%{name}-resolve
+%attr(755,root,root) %{_bindir}/%{name}-resolve-address
+%attr(755,root,root) %{_bindir}/%{name}-resolve-host-name
+%attr(755,root,root) %{_bindir}/%{name}-set-host-name
+%attr(755,root,root) %{_sbindir}/%{name}-autoipd
 
 %files libs
 %manifest %{name}-libs.manifest
 %defattr(0644, root, root, 0755)
-/usr/share/license/avahi-libs
-%{_libdir}/avahi
-%exclude %{_libdir}/avahi/service-types.db
-%attr(0755,root,root) %{_libdir}/libavahi-common.so.*
-%attr(0755,root,root) %{_libdir}/libavahi-client.so.*
-%attr(0755,root,root) %{_libdir}/libavahi-core.so.*
+%{_libdir}/%{name}
+%exclude %{_libdir}/%{name}/service-types.db
+%attr(0755,root,root) %{_libdir}/lib%{name}-common.so.*
+%attr(0755,root,root) %{_libdir}/lib%{name}-client.so.*
+%attr(0755,root,root) %{_libdir}/lib%{name}-core.so.*
+%license LICENSE
 
-%files -n avahi-data
-%manifest avahi-data.manifest
+%files -n %{name}-data
+%manifest %{name}-data.manifest
 %defattr(0644,root,root,0755)
-/usr/share/license/avahi-data
-%exclude %dir %{_datadir}/avahi
-%exclude %{_datadir}/avahi/*.dtd
-%exclude %{_datadir}/avahi/service-types
-%dir /usr/%{_sysconfdir}/avahi
-%dir /usr%{_sysconfdir}/avahi/etc
-%ghost /usr%{_sysconfdir}/avahi/etc/localtime
-/usr%{_sysconfdir}/avahi/avahi-daemon.conf
+%exclude %dir %{_datadir}/%{name}
+%exclude %{_datadir}/%{name}/*.dtd
+%exclude %{_datadir}/%{name}/service-types
+%dir %{_sysconfdir}/%{name}
+%dir %{_sysconfdir}/%{name}/etc
+%ghost %{_sysconfdir}/%{name}/etc/localtime
+%config %{_sysconfdir}/%{name}/%{name}-daemon.conf
+%license LICENSE
