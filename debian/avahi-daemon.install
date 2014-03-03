@@ -1,9 +1,0 @@
-opt/etc/avahi/avahi-daemon.conf
-opt/etc/avahi/hosts
-opt/etc/dbus-1/system.d/avahi-dbus.conf
-usr/sbin/avahi-daemon
-usr/share/avahi/avahi-service.dtd
-usr/share/dbus-1/interfaces/
-usr/share/dbus-1/system-services/org.freedesktop.Avahi.service
-lib/systemd/system/avahi-daemon.socket
-lib/systemd/system/avahi-daemon.service
