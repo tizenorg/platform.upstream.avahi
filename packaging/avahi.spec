@@ -87,7 +87,7 @@ cp %{SOURCE1001} %{SOURCE1002} %{SOURCE1003} %{SOURCE1004} .
 		--disable-gobject \
 		--disable-gdbm \
         --sysconfdir=%{_sysconfdir}  \
-		--localstatedir=/opt/var \
+		--localstatedir=%{_localstatedir} \
 		--without-systemdsystemunitdir
 
 make %{?_smp_mflags}
@@ -104,7 +104,7 @@ rm -f $RPM_BUILD_ROOT%{_libdir}/*.a
 rm -f $RPM_BUILD_ROOT%{_sysconfdir}/%{name}/services/sftp-ssh.service
 
 # create /var/run/avahi-daemon to ensure correct selinux policy for it:
-mkdir -p $RPM_BUILD_ROOT/opt%{_localstatedir}/run/%{name}-daemon
+mkdir -p $RPM_BUILD_ROOT/%{_localstatedir}/run/%{name}-daemon
 
 
 #mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/lib/%{name}-autoipd
@@ -122,12 +122,12 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %post
-mkdir -p /opt/var/run/%{name}-daemon
+mkdir -p %{_localstatedir}/run/%{name}-daemon
 #Evne eglibc is included in Requires(post),
 #Not sure whether it's ok or not during making OBS image.
 #That's why if statement is commented out to gurantee chown operation
 #if [ ! -z "`getent group %{name}`" ]; then
-    chown -R %{name}:%{name} /opt/var/run/%{name}-daemon || true
+    chown -R %{name}:%{name} %{_localstatedir}/run/%{name}-daemon || true
 #fi
 
 
@@ -140,7 +140,7 @@ mkdir -p /opt/var/run/%{name}-daemon
 %files
 %manifest %{name}.manifest
 %defattr(0644,root,root,0755)
-%ghost %attr(0755,%{name},%{name}) %dir /opt%{_localstatedir}/run/%{name}-daemon
+%ghost %attr(0755,%{name},%{name}) %dir %{_localstatedir}/run/%{name}-daemon
 %attr(0755,root,root) %{_sbindir}/%{name}-daemon
 %license LICENSE
 
