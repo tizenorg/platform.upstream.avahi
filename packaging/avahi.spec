@@ -66,31 +66,34 @@ to run programs that use avahi.
 cp %{SOURCE1001} %{SOURCE1002} %{SOURCE1003} %{SOURCE1004} .
 
 %build
-%configure --with-distro=fedora --with-avahi-user=avahi --with-avahi-group=avahi --with-avahi-priv-access-group=avahi \
-		--disable-compat-libdns_sd \
-		--disable-mono \
-		--disable-monodoc \
-		--disable-qt3 \
-		--disable-qt4 \
-		--disable-gtk \
-		--disable-gtk3\
-		--disable-python \
-		--disable-pygtk \
-		--disable-python-dbus \
-		--disable-doxygen-doc\
-		--disable-doxygen-dot\
-		--disable-doxygen-xml\
-		--disable-doxygen-html\
-		--disable-doxygen-manpages\
-		--disable-doxygen-xmltoman\
-		--disable-glib \
-		--disable-gobject \
-		--disable-gdbm \
-        --sysconfdir=%{_sysconfdir}  \
-		--localstatedir=%{_localstatedir} \
-		--without-systemdsystemunitdir
+%configure --with-distro=fedora \
+           --with-avahi-user=avahi \
+           --with-avahi-group=avahi \
+           --with-avahi-priv-access-group=avahi \
+           --disable-compat-libdns_sd \
+           --disable-mono \
+           --disable-monodoc \
+           --disable-qt3 \
+           --disable-qt4 \
+           --disable-gtk \
+           --disable-gtk3\
+           --disable-python \
+           --disable-pygtk \
+           --disable-python-dbus \
+           --disable-doxygen-doc\
+           --disable-doxygen-dot\
+           --disable-doxygen-xml\
+           --disable-doxygen-html\
+           --disable-doxygen-manpages\
+           --disable-doxygen-xmltoman\
+           --disable-glib \
+           --disable-gobject \
+           --disable-gdbm \
+           --sysconfdir=%{_sysconfdir}  \
+           --localstatedir=%{_localstatedir} \
+           --without-systemdsystemunitdir
 
-make %{?_smp_mflags}
+%__make %{?_smp_mflags}
 
 %install
 
@@ -107,7 +110,7 @@ rm -f $RPM_BUILD_ROOT%{_sysconfdir}/%{name}/services/sftp-ssh.service
 mkdir -p $RPM_BUILD_ROOT/%{_localstatedir}/run/%{name}-daemon
 
 
-#mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/lib/%{name}-autoipd
+#mkdir -p $RPM_BUILD_ROOT%%{_localstatedir}/lib/%%{name}-autoipd
 
 
 # Make /etc/avahi/etc/localtime owned by avahi:
@@ -126,7 +129,7 @@ mkdir -p %{_localstatedir}/run/%{name}-daemon
 #Evne eglibc is included in Requires(post),
 #Not sure whether it's ok or not during making OBS image.
 #That's why if statement is commented out to gurantee chown operation
-#if [ ! -z "`getent group %{name}`" ]; then
+#if [ ! -z "`getent group %%{name}`" ]; then
     chown -R %{name}:%{name} %{_localstatedir}/run/%{name}-daemon || true
 #fi
 
