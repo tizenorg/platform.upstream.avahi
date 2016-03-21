@@ -36,7 +36,6 @@ convenient.
 %package libs
 Summary:  Libraries for avahi run-time use
 Group:    System/Libraries
-Requires: poppler-tools
 
 %description libs
 The avahi-libs package contains the libraries needed
